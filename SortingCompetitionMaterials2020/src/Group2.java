@@ -1,22 +1,17 @@
 package SortingCompetitionMaterials2020.src;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Scanner;
 import java.util.List;
-import java.math.BigInteger;
 
 public class Group2 {
     public static void main(String[] args) throws InterruptedException, FileNotFoundException, IOException {
         // testing the comparator:
-        Data.test_Data(); // This MUST be commented out for your submission to the competition!
+        //Data.test_Data(); // This MUST be commented out for your submission to the competition!
 
         if (args.length < 2) {
             System.out.println("Please run with two command line arguments: input and output file names");
@@ -29,12 +24,12 @@ public class Group2 {
         // read as strings
         String[] data = readData(inputFileName);
         String[] toSort = data.clone();
-        Data[] sorted = sort(toSort); // Warm up the VM
+        Data[] sorted = sort(toSort, 0 , toSort.length-1); // Warm up the VM
         toSort = data.clone();
         Thread.sleep(10); // to let other things finish before timing; adds stability of runs
 
         long start = System.currentTimeMillis(); // Begin the timing
-        sorted = sort(toSort);
+        sorted = sort(toSort, 0, toSort.length-1);
         long end = System.currentTimeMillis(); // End the timing
 
         System.out.println(end - start); // Report the results
@@ -49,14 +44,49 @@ public class Group2 {
     // Note: you may change the return type of the method.
     // You would need to provide your own function that prints your sorted array to
     // a file in the exact same format that my program outputs
-    private static Data[] sort(String[] toSort) {
+    /*private static Data[] sort(String[] toSort) {
         Data[] toSortData = new Data[toSort.length];
+        GematriaComparator compare = new GematriaComparator();
         for (int i = 0; i < toSort.length; ++i) {
             toSortData[i] = new Data(toSort[i]);
         }
-        Arrays.sort(toSortData, new GematriaComparator());
+        *//*for(int i = 0; i<toSort.length; i++){
+            for(int j = i+1; j<toSort.length; j++){
+                //Arrays.sort(toSortData, new GematriaComparator());
+            }
+        }*//*
         return toSortData;
     }
+*/
+    public static Data[] sort(String[] array, int p, int r) {
+        if (p < r) {
+            int pivotLocation = simplePartition(array, p, r);
+            sort(array, p, pivotLocation-1);
+            sort(array, pivotLocation+1, r);
+        }
+        return new Data[0];
+    }
+
+    private static int simplePartition(String[] array, int p, int r) {
+        GematriaComparator compare = new GematriaComparator();
+        Data[] toSortData = new Data[array.length];
+        Data pivot = toSortData[r];
+        int i = p-1;
+        int j;
+        for(j = p; j <= r-1; j++){
+            if(compare.compare(toSortData[j], pivot) == 1){
+                i = i+1;
+                Data temp = toSortData[i];
+                toSortData[i] = toSortData[j];
+                toSortData[j] = temp;
+            }
+        }
+        Data temp = toSortData[i+1];
+        toSortData[i+1]=toSortData[r];
+        toSortData[r]=temp;
+        return i+1;
+    }
+
 
     private static void printArray(String[] Arr, int n) {
         for (int i = 0; i < n; i++) {
